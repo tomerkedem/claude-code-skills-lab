@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const { addTask, completeTask, removeTask, listTasks } = require('./tasks');
+const { addTask, completeTask, removeTask, listTasks, parseId } = require('./tasks');
 const { loadTasks, saveTasks } = require('./storage');
 
 const USAGE = [
@@ -25,12 +25,12 @@ function run(args, filePath) {
       return `Added task ${result.task.id}: ${result.task.title}`;
     }
     case 'complete': {
-      const result = completeTask(tasks, Number(rest[0]));
+      const result = completeTask(tasks, parseId(rest[0]));
       saveTasks(result.tasks, filePath);
       return `Completed task ${result.task.id}: ${result.task.title}`;
     }
     case 'remove': {
-      const result = removeTask(tasks, Number(rest[0]));
+      const result = removeTask(tasks, parseId(rest[0]));
       saveTasks(result.tasks, filePath);
       return `Removed task ${result.task.id}: ${result.task.title}`;
     }

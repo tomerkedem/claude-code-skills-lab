@@ -2,7 +2,15 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { addTask, completeTask, removeTask, listTasks } = require('../src/tasks');
+const {
+  addTask,
+  completeTask,
+  removeTask,
+  listTasks,
+  parseId,
+  validateTitle,
+  MAX_TITLE_LENGTH,
+} = require('../src/tasks');
 
 test('addTask gives the first task id 1', () => {
   const { task } = addTask([], 'Write report');
@@ -76,4 +84,32 @@ test('removeTask does not modify the original list', () => {
 
 test('removeTask throws when the task does not exist', () => {
   assert.throws(() => removeTask([], 4), /Task 4 not found/);
+});
+
+test('validateTitle rejects empty and whitespace-only titles', () => {
+  assert.throws(() => validateTitle(''), /cannot be empty/);
+  assert.throws(() => validateTitle('   '), /cannot be empty/);
+  assert.throws(() => validateTitle(undefined), /cannot be empty/);
+});
+
+test('validateTitle rejects titles that are too long', () => {
+  assert.throws(() => validateTitle('a'.repeat(MAX_TITLE_LENGTH + 1)), /longer than 100/);
+  assert.strictEqual(validateTitle('a'.repeat(MAX_TITLE_LENGTH)).length, MAX_TITLE_LENGTH);
+});
+
+test('addTask does not accept an invalid title', () => {
+  assert.throws(() => addTask([], '  '), /cannot be empty/);
+});
+
+test('parseId accepts positive whole numbers', () => {
+  assert.strictEqual(parseId('3'), 3);
+  assert.strictEqual(parseId(7), 7);
+});
+
+test('parseId rejects missing, non-numeric, decimal, zero and negative ids', () => {
+  assert.throws(() => parseId(undefined), /id is required/);
+  assert.throws(() => parseId('abc'), /Invalid task id "abc"/);
+  assert.throws(() => parseId('1.5'), /Invalid task id "1.5"/);
+  assert.throws(() => parseId('0'), /Invalid task id "0"/);
+  assert.throws(() => parseId('-2'), /Invalid task id "-2"/);
 });

@@ -22,6 +22,12 @@ npm start -- remove 1
 Tasks are saved in `data/tasks.json`, which is created automatically and is
 not tracked by Git.
 
+## Input rules
+
+- A task title must not be empty and can be at most 100 characters long.
+- A task id must be a positive whole number, such as `3`.
+- Invalid input prints an error message and exits with a non-zero code.
+
 ## Test
 
 ```bash

@@ -48,3 +48,15 @@ test('remove deletes a task from the list', () => {
 test('remove reports an unknown task', () => {
   assert.throws(() => run(['remove', '9'], tempFile()), /Task 9 not found/);
 });
+
+test('add rejects an empty title and saves nothing', () => {
+  const file = tempFile();
+  assert.throws(() => run(['add'], file), /cannot be empty/);
+  assert.strictEqual(run(['list'], file), 'No tasks yet.');
+});
+
+test('complete and remove reject invalid ids', () => {
+  const file = tempFile();
+  assert.throws(() => run(['complete', 'abc'], file), /Invalid task id "abc"/);
+  assert.throws(() => run(['remove'], file), /id is required/);
+});

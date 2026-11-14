@@ -3,13 +3,39 @@
 // Pure task logic. Functions never read files or print anything,
 // which keeps them easy to understand and to test.
 
+const MAX_TITLE_LENGTH = 100;
+
+// Returns the cleaned-up title or throws a clear error.
+function validateTitle(title) {
+  const cleaned = typeof title === 'string' ? title.trim() : '';
+  if (cleaned.length === 0) {
+    throw new Error('Task title cannot be empty');
+  }
+  if (cleaned.length > MAX_TITLE_LENGTH) {
+    throw new Error(`Task title cannot be longer than ${MAX_TITLE_LENGTH} characters`);
+  }
+  return cleaned;
+}
+
+// Converts user input such as "3" into the number 3, or throws a clear error.
+function parseId(value) {
+  if (value === undefined || String(value).trim() === '') {
+    throw new Error('Task id is required');
+  }
+  const id = Number(value);
+  if (!Number.isInteger(id) || id < 1) {
+    throw new Error(`Invalid task id "${value}": use a positive whole number`);
+  }
+  return id;
+}
+
 function nextId(tasks) {
   return tasks.reduce((max, task) => Math.max(max, task.id), 0) + 1;
 }
 
 // Returns the updated list and the newly created task.
 function addTask(tasks, title) {
-  const task = { id: nextId(tasks), title: title.trim(), completed: false };
+  const task = { id: nextId(tasks), title: validateTitle(title), completed: false };
   return { tasks: [...tasks, task], task };
 }
 
@@ -36,4 +62,12 @@ function listTasks(tasks) {
   return [...tasks];
 }
 
-module.exports = { addTask, completeTask, removeTask, listTasks };
+module.exports = {
+  addTask,
+  completeTask,
+  removeTask,
+  listTasks,
+  parseId,
+  validateTitle,
+  MAX_TITLE_LENGTH,
+};
