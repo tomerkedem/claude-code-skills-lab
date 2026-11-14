@@ -25,3 +25,14 @@ test('add stores a task that list then shows', () => {
 test('unknown commands print usage', () => {
   assert.match(run(['unknown'], tempFile()), /Usage:/);
 });
+
+test('complete marks a task as done in the list', () => {
+  const file = tempFile();
+  run(['add', 'Write report'], file);
+  assert.strictEqual(run(['complete', '1'], file), 'Completed task 1: Write report');
+  assert.strictEqual(run(['list'], file), '1. Write report (done)');
+});
+
+test('complete reports an unknown task', () => {
+  assert.throws(() => run(['complete', '9'], tempFile()), /Task 9 not found/);
+});

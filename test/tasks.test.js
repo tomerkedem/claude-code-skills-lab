@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { addTask, listTasks } = require('../src/tasks');
+const { addTask, completeTask, listTasks } = require('../src/tasks');
 
 test('addTask gives the first task id 1', () => {
   const { task } = addTask([], 'Write report');
@@ -26,4 +26,28 @@ test('addTask does not modify the original list', () => {
 test('listTasks returns all tasks', () => {
   const { tasks } = addTask([], 'Task');
   assert.deepStrictEqual(listTasks(tasks), tasks);
+});
+
+test('new tasks start as not completed', () => {
+  const { task } = addTask([], 'Task');
+  assert.strictEqual(task.completed, false);
+});
+
+test('completeTask marks only the chosen task as completed', () => {
+  const first = addTask([], 'One');
+  const second = addTask(first.tasks, 'Two');
+  const result = completeTask(second.tasks, 1);
+  assert.strictEqual(result.task.completed, true);
+  assert.strictEqual(result.tasks[0].completed, true);
+  assert.strictEqual(result.tasks[1].completed, false);
+});
+
+test('completeTask does not modify the original list', () => {
+  const { tasks } = addTask([], 'Task');
+  completeTask(tasks, 1);
+  assert.strictEqual(tasks[0].completed, false);
+});
+
+test('completeTask throws when the task does not exist', () => {
+  assert.throws(() => completeTask([], 5), /Task 5 not found/);
 });

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const { addTask, listTasks } = require('./tasks');
+const { addTask, completeTask, listTasks } = require('./tasks');
 const { loadTasks, saveTasks } = require('./storage');
 
 const USAGE = [
   'Usage:',
   '  npm start -- add <title>   Add a new task',
+  '  npm start -- complete <id> Mark a task as completed',
   '  npm start -- list          Show all tasks',
 ].join('\n');
 
@@ -22,12 +23,19 @@ function run(args, filePath) {
       saveTasks(result.tasks, filePath);
       return `Added task ${result.task.id}: ${result.task.title}`;
     }
+    case 'complete': {
+      const result = completeTask(tasks, Number(rest[0]));
+      saveTasks(result.tasks, filePath);
+      return `Completed task ${result.task.id}: ${result.task.title}`;
+    }
     case 'list': {
       const all = listTasks(tasks);
       if (all.length === 0) {
         return 'No tasks yet.';
       }
-      return all.map((task) => `${task.id}. ${task.title}`).join('\n');
+      return all
+        .map((task) => `${task.id}. ${task.title}${task.completed ? ' (done)' : ''}`)
+        .join('\n');
     }
     default:
       return USAGE;
@@ -35,7 +43,12 @@ function run(args, filePath) {
 }
 
 function main() {
-  console.log(run(process.argv.slice(2), process.env.TASKS_FILE || undefined));
+  try {
+    console.log(run(process.argv.slice(2), process.env.TASKS_FILE || undefined));
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exitCode = 1;
+  }
 }
 
 if (require.main === module) {
