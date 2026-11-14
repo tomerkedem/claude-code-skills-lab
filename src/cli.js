@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 'use strict';
 
-const { addTask, completeTask, listTasks } = require('./tasks');
+const { addTask, completeTask, removeTask, listTasks } = require('./tasks');
 const { loadTasks, saveTasks } = require('./storage');
 
 const USAGE = [
   'Usage:',
   '  npm start -- add <title>   Add a new task',
   '  npm start -- complete <id> Mark a task as completed',
+  '  npm start -- remove <id>   Delete a task',
   '  npm start -- list          Show all tasks',
 ].join('\n');
 
@@ -27,6 +28,11 @@ function run(args, filePath) {
       const result = completeTask(tasks, Number(rest[0]));
       saveTasks(result.tasks, filePath);
       return `Completed task ${result.task.id}: ${result.task.title}`;
+    }
+    case 'remove': {
+      const result = removeTask(tasks, Number(rest[0]));
+      saveTasks(result.tasks, filePath);
+      return `Removed task ${result.task.id}: ${result.task.title}`;
     }
     case 'list': {
       const all = listTasks(tasks);

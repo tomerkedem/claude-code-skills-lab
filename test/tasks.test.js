@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { addTask, completeTask, listTasks } = require('../src/tasks');
+const { addTask, completeTask, removeTask, listTasks } = require('../src/tasks');
 
 test('addTask gives the first task id 1', () => {
   const { task } = addTask([], 'Write report');
@@ -50,4 +50,30 @@ test('completeTask does not modify the original list', () => {
 
 test('completeTask throws when the task does not exist', () => {
   assert.throws(() => completeTask([], 5), /Task 5 not found/);
+});
+
+test('removeTask deletes only the chosen task', () => {
+  const first = addTask([], 'One');
+  const second = addTask(first.tasks, 'Two');
+  const result = removeTask(second.tasks, 1);
+  assert.strictEqual(result.task.title, 'One');
+  assert.deepStrictEqual(result.tasks.map((task) => task.id), [2]);
+});
+
+test('new tasks keep getting increasing ids after an earlier task is removed', () => {
+  const first = addTask([], 'One');
+  const second = addTask(first.tasks, 'Two');
+  const afterRemove = removeTask(second.tasks, 1);
+  const third = addTask(afterRemove.tasks, 'Three');
+  assert.strictEqual(third.task.id, 3);
+});
+
+test('removeTask does not modify the original list', () => {
+  const { tasks } = addTask([], 'Task');
+  removeTask(tasks, 1);
+  assert.strictEqual(tasks.length, 1);
+});
+
+test('removeTask throws when the task does not exist', () => {
+  assert.throws(() => removeTask([], 4), /Task 4 not found/);
 });

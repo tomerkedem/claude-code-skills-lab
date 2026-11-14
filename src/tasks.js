@@ -23,8 +23,17 @@ function completeTask(tasks, id) {
   return { tasks: tasks.map((item) => (item.id === id ? task : item)), task };
 }
 
+// Removes a task. Returns the updated list and the removed task.
+function removeTask(tasks, id) {
+  const task = tasks.find((item) => item.id === id);
+  if (!task) {
+    throw new Error(`Task ${id} not found`);
+  }
+  return { tasks: tasks.filter((item) => item.id !== id), task };
+}
+
 function listTasks(tasks) {
   return [...tasks];
 }
 
-module.exports = { addTask, completeTask, listTasks };
+module.exports = { addTask, completeTask, removeTask, listTasks };

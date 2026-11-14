@@ -16,6 +16,7 @@ JavaScript. It exists to give learners a real Git history to practice with.
 npm start -- add Buy milk
 npm start -- list
 npm start -- complete 1
+npm start -- remove 1
 ```
 
 Tasks are saved in `data/tasks.json`, which is created automatically and is

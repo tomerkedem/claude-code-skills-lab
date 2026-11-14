@@ -36,3 +36,15 @@ test('complete marks a task as done in the list', () => {
 test('complete reports an unknown task', () => {
   assert.throws(() => run(['complete', '9'], tempFile()), /Task 9 not found/);
 });
+
+test('remove deletes a task from the list', () => {
+  const file = tempFile();
+  run(['add', 'One'], file);
+  run(['add', 'Two'], file);
+  assert.strictEqual(run(['remove', '1'], file), 'Removed task 1: One');
+  assert.strictEqual(run(['list'], file), '2. Two');
+});
+
+test('remove reports an unknown task', () => {
+  assert.throws(() => run(['remove', '9'], tempFile()), /Task 9 not found/);
+});
