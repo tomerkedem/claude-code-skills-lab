@@ -31,6 +31,15 @@ test('addTask does not modify the original list', () => {
   assert.strictEqual(original.length, 0);
 });
 
+test('listTasks can filter by status', () => {
+  const first = addTask([], 'One');
+  const second = addTask(first.tasks, 'Two');
+  const { tasks } = completeTask(second.tasks, 1);
+  assert.deepStrictEqual(listTasks(tasks, 'pending').map((t) => t.id), [2]);
+  assert.deepStrictEqual(listTasks(tasks, 'done').map((t) => t.id), [1]);
+  assert.throws(() => listTasks(tasks, 'later'), /Unknown filter/);
+});
+
 test('listTasks returns all tasks', () => {
   const { tasks } = addTask([], 'Task');
   assert.deepStrictEqual(listTasks(tasks), tasks);

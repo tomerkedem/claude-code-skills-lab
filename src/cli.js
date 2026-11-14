@@ -3,14 +3,31 @@
 
 const { addTask, completeTask, removeTask, listTasks, parseId } = require('./tasks');
 const { loadTasks, saveTasks } = require('./storage');
+const { formatTaskList } = require('./format');
 
 const USAGE = [
   'Usage:',
-  '  npm start -- add <title>   Add a new task',
-  '  npm start -- complete <id> Mark a task as completed',
-  '  npm start -- remove <id>   Delete a task',
-  '  npm start -- list          Show all tasks',
+  '  npm start -- add <title>        Add a new task',
+  '  npm start -- complete <id>      Mark a task as completed',
+  '  npm start -- remove <id>        Delete a task',
+  '  npm start -- list               Show all tasks',
+  '  npm start -- list --pending     Show only tasks that are not completed',
+  '  npm start -- list --done        Show only completed tasks',
+  '  npm start -- help               Show this message',
 ].join('\n');
+
+const LIST_FILTERS = { '--pending': 'pending', '--done': 'done' };
+
+// Reads the optional flag after "list" and returns the filter name.
+function parseListFilter(flag) {
+  if (flag === undefined) {
+    return 'all';
+  }
+  if (!(flag in LIST_FILTERS)) {
+    throw new Error(`Unknown option "${flag}". Run "npm start -- help" to see usage.`);
+  }
+  return LIST_FILTERS[flag];
+}
 
 // Runs one command and returns the text to print.
 // `filePath` is optional and lets tests use a temporary file.
@@ -35,16 +52,14 @@ function run(args, filePath) {
       return `Removed task ${result.task.id}: ${result.task.title}`;
     }
     case 'list': {
-      const all = listTasks(tasks);
-      if (all.length === 0) {
-        return 'No tasks yet.';
-      }
-      return all
-        .map((task) => `${task.id}. ${task.title}${task.completed ? ' (done)' : ''}`)
-        .join('\n');
+      const filter = parseListFilter(rest[0]);
+      return formatTaskList(listTasks(tasks, filter), tasks, filter);
     }
-    default:
+    case undefined:
+    case 'help':
       return USAGE;
+    default:
+      throw new Error(`Unknown command "${command}". Run "npm start -- help" to see usage.`);
   }
 }
 

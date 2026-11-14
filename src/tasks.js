@@ -58,8 +58,18 @@ function removeTask(tasks, id) {
   return { tasks: tasks.filter((item) => item.id !== id), task };
 }
 
-function listTasks(tasks) {
-  return [...tasks];
+// Returns tasks, optionally filtered by status: "all", "pending" or "done".
+function listTasks(tasks, filter = 'all') {
+  switch (filter) {
+    case 'all':
+      return [...tasks];
+    case 'pending':
+      return tasks.filter((task) => !task.completed);
+    case 'done':
+      return tasks.filter((task) => task.completed);
+    default:
+      throw new Error(`Unknown filter "${filter}": use "all", "pending" or "done"`);
+  }
 }
 
 module.exports = {
