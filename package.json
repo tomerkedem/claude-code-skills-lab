@@ -1,0 +1,14 @@
+{
+  "name": "claude-code-skills-lab",
+  "version": "1.0.0",
+  "description": "A small task manager used to practice Claude Code Skills with real Git history.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

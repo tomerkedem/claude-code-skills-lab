@@ -1,0 +1,9 @@
+# Local task data created by the CLI
+data/
+
+# Dependencies (none are used, but keep them out of Git if added by mistake)
+node_modules/
+
+# Operating system files
+.DS_Store
+Thumbs.db
